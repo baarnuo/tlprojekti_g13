@@ -14,7 +14,7 @@ Projekti suoritettiin OAMK:n tietotekniikan koulutusohjelman toisen vuosikurssin
 
 ## Arkkitehtuurikuva
 
-![Arkkitehtuurikuva](readme_images/Arkkitehtuurikuva(alustava).png?raw=true)
+![Arkkitehtuurikuva](readme_images/Arkkitehtuurikuva_2.png?raw=true)
 
 ## Projektin vaiheet
 
