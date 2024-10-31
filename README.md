@@ -12,6 +12,10 @@ Projekti suoritettiin OAMK:n tietotekniikan koulutusohjelman toisen vuosikurssin
 
 [@baarnuo](https://github.com/baarnuo/)
 
+## Arkkitehtuurikuva
+
+![Arkkitehtuurikuva](readme_images/arkkitehtuurikuva(alustava).png?raw=true)
+
 ## Projektin vaiheet
 
 ### Viikko 1
