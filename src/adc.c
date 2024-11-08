@@ -21,10 +21,6 @@ static const struct adc_dt_spec adc_channels[] = {
 			     DT_SPEC_AND_COMMA)
 };
 
-
-
-
-
 void printDebugInfo(void)
 {
    printk("printing first adc_dt_spec structure contents for all channels\n");
@@ -43,7 +39,6 @@ void printDebugInfo(void)
 
 int initializeADC(void)
 {
-
     int err;
 	
 	for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
@@ -60,7 +55,6 @@ int initializeADC(void)
 	}
 
     return 0;
-
 }
 
 struct Measurement readADCValue(void)
