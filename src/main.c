@@ -38,7 +38,7 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 
 #define RUN_LED_BLINK_INTERVAL 1000
 /* STEP 17 - Define the interval at which you want to send data at */
-#define NOTIFY_INTERVAL 500
+#define NOTIFY_INTERVAL 1000
 static bool app_button_state;
 /* STEP 15 - Define the data you want to stream over Bluetooth LE */
 //static uint32_t app_sensor_value = 100;
@@ -74,20 +74,25 @@ static bool app_button_cb(void)
 /* STEP 18.1 - Define the thread function  */
 void send_data_thread(void)
 {
-	if(initializeADC() != 0)
-	{
-	printk("ADC initialization failed!");
-	return;
-	}
+	char x_str[5];
+	char y_str[5];
+	char z_str[5];
 	while (1) {
 		/* Simulate data */
 		//simulate_data();
 		struct Measurement m = readADCValue();
+		//sprintf(x_str, "%d", m.x);
+		//sprintf(y_str, "%d", m.y);
+		//sprintf(z_str, "%d", m.z);
+		//printk("%s\n", x_str);
+		uint16_t xtest = m.x;
 		/* Send notification, the function sends notifications only if a client is subscribed */
-		my_lbs_send_sensor_notify(m.x);
-		//my_lbs_send_sensor_notify(m.y);
-		//my_lbs_send_sensor_notify(m.z);
-		printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
+		my_lbs_send_sensor_notify(xtest);
+		//my_lbs_send_sensor_notify(y_str);
+		//my_lbs_send_sensor_notify(z_str);
+		//printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
+		printk("%d\n", xtest);
+		printk("%d\n", m.x);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
@@ -148,6 +153,12 @@ int main(void)
 	int blink_status = 0;
 	int err;
 
+	if(initializeADC() != 0)
+	{
+	printk("ADC initialization failed!");
+	return;
+	}
+
 	LOG_INF("Starting Lesson 4 - Exercise 2 \n");
 
 	err = dk_leds_init();
@@ -186,6 +197,8 @@ int main(void)
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
 	}
+
+	
 }
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
 K_THREAD_DEFINE(send_data_thread_id, STACKSIZE, send_data_thread, NULL, NULL, NULL, PRIORITY, 0, 0);

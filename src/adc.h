@@ -3,9 +3,9 @@
 
 struct Measurement
 {
-   uint16_t x;
-   uint16_t y;
-   uint16_t z;
+   uint32_t x;
+   uint32_t y;
+   uint32_t z;
 };
 
 int initializeADC(void);
