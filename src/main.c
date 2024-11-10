@@ -37,11 +37,9 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 #define PRIORITY 7
 
 #define RUN_LED_BLINK_INTERVAL 1000
-/* STEP 17 - Define the interval at which you want to send data at */
-#define NOTIFY_INTERVAL 5000
-static bool app_button_state;
-/* STEP 15 - Define the data you want to stream over Bluetooth LE */
-//static uint32_t app_sensor_value = 100;
+#define NOTIFY_INTERVAL 3000
+
+uint8_t sensor_orientation = 0;
 
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
@@ -53,33 +51,40 @@ static const struct bt_data sd[] = {
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_LBS_VAL),
 };
 
-static bool app_button_cb(void)
-{
-	return app_button_state;
-}
-
-/* STEP 18.1 - Define the thread function  */
 void send_data_thread(void)
 {
 	while (1) {
 		struct Measurement m = readADCValue();
-		uint32_t xtest = m.x;
-		/* Send notification, the function sends notifications only if a client is subscribed */
-		my_lbs_send_sensor_notify(xtest);
-		//my_lbs_send_sensor_notify(y_str);
-		//my_lbs_send_sensor_notify(z_str);
+		
+		my_lbs_send_sensor_notify(m.x);
+		my_lbs_send_sensor_notify(m.y);
+		my_lbs_send_sensor_notify(m.z);
+		my_lbs_send_sensor_notify(sensor_orientation);
+		
+		printk("Sensorin asento %d\n", sensor_orientation);
 		printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
 }
 
-static void button_changed(uint32_t button_state, uint32_t has_changed)
+static void button_pressed(uint32_t button_state)
 {
-	if (has_changed & USER_BUTTON) {
-		uint32_t user_button_state = button_state & USER_BUTTON;
-		printk("Nappia painettu, tila %s\n", user_button_state ? " päällä" : " pois");
-		app_button_state = user_button_state ? true : false;
+	if (button_state & USER_BUTTON) {
+		printk("Nappia painettu -> asento vaihtuu\n");
+		printk("Asennot:\n");
+		printk("0 = X-akseli alas - suuri arvo\n");
+		printk("1 = X-akseli ylös - pieni arvo\n");
+		printk("2 = Y-akseli alas - suuri arvo\n");
+		printk("3 = Y-akseli ylös - pieni arvo\n");
+		printk("4 = Z-akseli alas - suuri arvo\n");
+		printk("5 = Z-akseli ylös - pieni arvo\n");
+
+		sensor_orientation++;
+
+		if (sensor_orientation > 5) {
+			sensor_orientation = 0;
+		}
 	}
 	return;
 }
@@ -112,7 +117,7 @@ static int init_button(void)
 {
 	int err;
 
-	err = dk_buttons_init(button_changed);
+	err = dk_buttons_init(button_pressed);
 	if (err) {
 		printk("Cannot init buttons (err: %d)\n", err);
 	}
