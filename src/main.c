@@ -38,7 +38,7 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 
 #define RUN_LED_BLINK_INTERVAL 1000
 /* STEP 17 - Define the interval at which you want to send data at */
-#define NOTIFY_INTERVAL 1000
+#define NOTIFY_INTERVAL 5000
 static bool app_button_state;
 /* STEP 15 - Define the data you want to stream over Bluetooth LE */
 //static uint32_t app_sensor_value = 100;
@@ -53,19 +53,6 @@ static const struct bt_data sd[] = {
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_LBS_VAL),
 };
 
-/* STEP 16 - Define a function to simulate the data */
-static void simulate_data(void)
-{
-	/*app_sensor_value++;
-	if (app_sensor_value == 200) {
-		app_sensor_value = 100;
-	}*/
-}
-static void app_led_cb(bool led_state)
-{
-	dk_set_led(USER_LED, led_state);
-}
-
 static bool app_button_cb(void)
 {
 	return app_button_state;
@@ -74,44 +61,29 @@ static bool app_button_cb(void)
 /* STEP 18.1 - Define the thread function  */
 void send_data_thread(void)
 {
-	char x_str[5];
-	char y_str[5];
-	char z_str[5];
 	while (1) {
-		/* Simulate data */
-		//simulate_data();
 		struct Measurement m = readADCValue();
-		//sprintf(x_str, "%d", m.x);
-		//sprintf(y_str, "%d", m.y);
-		//sprintf(z_str, "%d", m.z);
-		//printk("%s\n", x_str);
-		uint16_t xtest = m.x;
+		uint32_t xtest = m.x;
 		/* Send notification, the function sends notifications only if a client is subscribed */
 		my_lbs_send_sensor_notify(xtest);
 		//my_lbs_send_sensor_notify(y_str);
 		//my_lbs_send_sensor_notify(z_str);
-		//printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
-		printk("%d\n", xtest);
-		printk("%d\n", m.x);
+		printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
 }
 
-static struct my_lbs_cb app_callbacks = {
-	.led_cb = app_led_cb,
-	.button_cb = app_button_cb,
-};
-
 static void button_changed(uint32_t button_state, uint32_t has_changed)
 {
 	if (has_changed & USER_BUTTON) {
 		uint32_t user_button_state = button_state & USER_BUTTON;
-		/* STEP 6 - Send indication on a button press */
-		my_lbs_send_button_state_indicate(user_button_state);
+		printk("Nappia painettu, tila %s\n", user_button_state ? " päällä" : " pois");
 		app_button_state = user_button_state ? true : false;
 	}
+	return;
 }
+
 static void on_connected(struct bt_conn *conn, uint8_t err)
 {
 	if (err) {
@@ -180,11 +152,6 @@ int main(void)
 	}
 	bt_conn_cb_register(&connection_callbacks);
 
-	err = my_lbs_init(&app_callbacks);
-	if (err) {
-		printk("Failed to init LBS (err:%d)\n", err);
-		return -1;
-	}
 	LOG_INF("Bluetooth initialized\n");
 	err = bt_le_adv_start(adv_param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
 	if (err) {
@@ -200,5 +167,6 @@ int main(void)
 
 	
 }
+
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
 K_THREAD_DEFINE(send_data_thread_id, STACKSIZE, send_data_thread, NULL, NULL, NULL, PRIORITY, 0, 0);
