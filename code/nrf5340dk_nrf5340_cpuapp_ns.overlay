@@ -11,10 +11,34 @@
 // For more help, browse the DeviceTree documentation at https://docs.zephyrproject.org/latest/guides/dts/index.html
 // You can also visit the nRF DeviceTree extension documentation at https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/guides/ncs_configure_app.html#devicetree-support-in-the-extension
 
-/*
+/* 
 / {
     aliases {
-        acceleration = &accel;
+        accelero = "accel-channels";
+    };
+    
+    zephyr,user {
+        accel-channels = <&x_chan>, <&y_chan>, <&z_chan>;
+    };
+};
+
+&spi1 {
+
+    adxl355@0 {
+        status = "okay";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        reg = <0>;
+
+        x_chan: channel@0 {
+            reg = <0>;
+        };
+        y_chan: channel@1 {
+            reg = <1>;
+        };
+        z_chan: channel@2 {
+            reg = <2>;
+        };
     };
 };
 */
