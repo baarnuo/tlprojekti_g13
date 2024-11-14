@@ -169,8 +169,6 @@ int main(void)
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
 	}
-
-	
 }
 
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
