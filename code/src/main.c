@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/adc.h>
 #include <zephyr/sys/util_macro.h>
 #include <zephyr/kernel.h>
 
@@ -115,6 +117,8 @@ int main(void)
         printk("Bluetooth startup failed, error code %d.\n", error);
         return -1;
     }
+
+    test();
     
     // Blink the status led to let people know the device is on and running as it should
     while (1) {

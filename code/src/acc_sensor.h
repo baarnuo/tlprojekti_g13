@@ -1,22 +1,14 @@
 #ifndef ACC_SENSOR_H
 #define ACC_SENSOR_H
 
-#include <zephyr/drivers/sensor.h>
-
 #define CHANNEL_NO 3
 
-#define ACCELEROMETER DT_ALIAS(accelero)
+#define ACCELEROMETER DT_ALIAS(accel)
 #if DT_NODE_HAS_STATUS(ACCELEROMETER, okay)
 const struct device *const accel = DEVICE_DT_GET(ACCELEROMETER);
 #else
 #error "No accelerometer node"
 #endif
-
-static const enum sensor_channel channels[] = {
-    SENSOR_CHAN_ACCEL_X,
-    SENSOR_CHAN_ACCEL_Y,
-    SENSOR_CHAN_ACCEL_Z
-};
 
 struct AccelerationData {
     int16_t x;
@@ -33,6 +25,13 @@ enum Direction {
     BACK
 };
 
+static int test(void) {
+    printk("%d", accel->x_chan);
+    
+    return 0;
+}
+
+/*
 static int read_accelerometer(const struct device *device, struct AccelerationData *data)
 {
     int result = 0;
@@ -61,5 +60,6 @@ static int read_accelerometer(const struct device *device, struct AccelerationDa
 
     return 0;
 }
+*/
 
 #endif
