@@ -1,6 +1,9 @@
 #ifndef ACC_SENSOR_H
 #define ACC_SENSOR_H
 
+#include <stdint.h>
+#include <zephyr/devicetree.h>
+
 #define CHANNEL_NO 3
 
 #define ACCELEROMETER DT_ALIAS(accel)
@@ -26,11 +29,10 @@ enum Direction {
 };
 
 static int test(void) {
-    printk("%d", accel->x_chan);
+    printk("test");
     
     return 0;
 }
-
 /*
 static int read_accelerometer(const struct device *device, struct AccelerationData *data)
 {
