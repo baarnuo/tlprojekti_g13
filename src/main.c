@@ -39,8 +39,6 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 #define RUN_LED_BLINK_INTERVAL 1000
 #define NOTIFY_INTERVAL 3000
 
-uint8_t sensor_orientation = 0;
-
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
@@ -54,15 +52,17 @@ static const struct bt_data sd[] = {
 void send_data_thread(void)
 {
 	while (1) {
-		struct Measurement m = readADCValue();
+		//struct Measurement m = readADCValue();
 		
-		my_lbs_send_sensor_notify(m.x);
-		my_lbs_send_sensor_notify(m.y);
-		my_lbs_send_sensor_notify(m.z);
-		my_lbs_send_sensor_notify(sensor_orientation);
-		
-		printk("Sensorin asento %d\n", sensor_orientation);
-		printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
+		//send_sensor_x_notify(m.x);
+		//send_sensor_y_notify(m.y);
+		//send_sensor_z_notify(m.z);
+		//my_lbs_send_sensor_notify(m.y);
+		//my_lbs_send_sensor_notify(m.z);
+		//my_lbs_send_sensor_notify(sensor_orientation);
+		get_measurements();
+		//printk("Sensorin asento %d\n", sensor_orientation);
+		//printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
@@ -71,20 +71,7 @@ void send_data_thread(void)
 static void button_pressed(uint32_t button_state)
 {
 	if (button_state & USER_BUTTON) {
-		printk("Nappia painettu -> asento vaihtuu\n");
-		printk("Asennot:\n");
-		printk("0 = X-akseli alas - suuri arvo\n");
-		printk("1 = X-akseli ylös - pieni arvo\n");
-		printk("2 = Y-akseli alas - suuri arvo\n");
-		printk("3 = Y-akseli ylös - pieni arvo\n");
-		printk("4 = Z-akseli alas - suuri arvo\n");
-		printk("5 = Z-akseli ylös - pieni arvo\n");
-
-		sensor_orientation++;
-
-		if (sensor_orientation > 5) {
-			sensor_orientation = 0;
-		}
+		set_orientation();
 	}
 	return;
 }
