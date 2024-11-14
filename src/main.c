@@ -52,17 +52,7 @@ static const struct bt_data sd[] = {
 void send_data_thread(void)
 {
 	while (1) {
-		//struct Measurement m = readADCValue();
-		
-		//send_sensor_x_notify(m.x);
-		//send_sensor_y_notify(m.y);
-		//send_sensor_z_notify(m.z);
-		//my_lbs_send_sensor_notify(m.y);
-		//my_lbs_send_sensor_notify(m.z);
-		//my_lbs_send_sensor_notify(sensor_orientation);
 		get_measurements();
-		//printk("Sensorin asento %d\n", sensor_orientation);
-		//printk("x = %d, y = %d, z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(NOTIFY_INTERVAL));
 	}
