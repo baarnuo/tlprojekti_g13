@@ -11,7 +11,7 @@
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/conn.h>
 #include <dk_buttons_and_leds.h>
-#include "my_lbs.h"
+#include "accs.h"
 #include "adc.h"
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
@@ -46,7 +46,7 @@ static const struct bt_data ad[] = {
 };
 
 static const struct bt_data sd[] = {
-	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_LBS_VAL),
+	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_ACCS_VAL),
 };
 
 void send_data_thread(void)
@@ -58,7 +58,8 @@ void send_data_thread(void)
 	}
 }
 
-static void button_pressed(uint32_t button_state)
+// A yellow squiggly arrives without the "has_changed"
+static void button_pressed(uint32_t button_state, uint32_t has_changed)
 {
 	if (button_state & USER_BUTTON) {
 		set_orientation();
@@ -107,10 +108,10 @@ int main(void)
 	int blink_status = 0;
 	int err;
 
-	if(initializeADC() != 0)
+	if (initializeADC() != 0)
 	{
-	printk("ADC initialization failed!");
-	return;
+		printk("ADC initialization failed!");
+		return -1;
 	}
 
 	LOG_INF("Starting Lesson 4 - Exercise 2 \n");

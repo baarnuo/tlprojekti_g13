@@ -11,7 +11,7 @@ project(ADC)
 # NORDIC SDK APP START
 target_sources(app PRIVATE
   src/main.c
-  src/my_lbs.c
+  src/accs.c
   src/adc.c
 )
 
