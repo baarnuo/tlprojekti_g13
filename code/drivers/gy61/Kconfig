@@ -1,0 +1,5 @@
+# A little chip that tells you where gravity is
+
+menuconfig GY61
+    bool "ADXL355 GY61 3-axis accelerometer"
+    depends on ADC

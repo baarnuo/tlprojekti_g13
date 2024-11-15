@@ -4,6 +4,12 @@
     aliases {
         accel = &sen1;
     };
+};
+
+&adc {
+    status = "okay";
+    #address-cells = <1>;
+    #size-cells = <0>;
 
     gy61 {
         status = "okay";
@@ -19,12 +25,6 @@
             z_chan = <&adc 2>;
         };
     };
-};
-
-&adc {
-    status = "okay";
-    #address-cells = <1>;
-    #size-cells = <0>;
 
     channel@0 {
         reg = <0>;
