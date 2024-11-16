@@ -6,12 +6,15 @@ properties:
   status:
     required: true
     type: string
-  x-chan:
+  io-channels:
     required: true
-    type: phandle
-  y-chan:
-    required: true
-    type: phandle
-  z-chan:
-    required: true
-    type: phandle
+    type: phandle-array
+#  x-chan:
+#    required: true
+#    type: phandle
+#  y-chan:
+#    required: true
+#    type: phandle
+#  z-chan:
+#    required: true
+#    type: phandle

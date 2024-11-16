@@ -117,7 +117,13 @@ int main(void)
         return -1;
     }
 
-    initialize_accelerometer();
+    error = initialize_accelerometer();
+    if (error) {
+        printk("Failed to initialize accelerometer, error code %d.\n", error);
+        return -1;
+    }
+    
+    test();
     
     // Blink the status led to let people know the device is on and running as it should
     while (1) {
@@ -130,7 +136,9 @@ int main(void)
 void measurement_thread(void)
 {
     while (1) {
-        simulate_measurement();
+        struct AccelerationData data;
+        read_data(&data);
+        printk("Read data: x = %d, y = %d, z = %d, dir = %d.\n", data.x, data.y, data.z, data.direction);
         k_sleep(K_MSEC(MEASUREMENT_INTERVAL));
     }
 }

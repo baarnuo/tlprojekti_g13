@@ -7,58 +7,104 @@ const struct device *const acc_device =  DEVICE_DT_GET(ACCELEROMETER);
 #error "No accelerometer node"
 #endif
 
-#define CHANNEL_NO 3
+static const struct adc_dt_spec channels[] = {
+    ADC_DT_SPEC_GET_BY_IDX(DT_PATH(gy61), 0),
+    ADC_DT_SPEC_GET_BY_IDX(DT_PATH(gy61), 1),
+    ADC_DT_SPEC_GET_BY_IDX(DT_PATH(gy61), 2)
+};
 
-struct Accelerometer initialize_accelerometer(void) 
-{
-    struct Accelerometer acc = {
-        .device = acc_device,
-        .pins.pin_x = DT_PROP(ACCELEROMETER, x_chan),
-        .pins.pin_y = DT_PROP(ACCELEROMETER, y_chan),
-        .pins.pin_z = DT_PROP(ACCELEROMETER, z_chan),
-        .data.x = 0,
-        .data.y = 0,
-        .data.z = 0,
-        .direction = 0,
-    };
 
-    return acc;
-}
+int test(void) {
+    for(int i = 0;i<3;i++) {
+        printk("adc_dt_spec structure, channel %d = \n", i);
+        printk("Device pointer = %p\n", channels[i].dev);
+        printk("Channel Id = %d\n", channels[i].channel_id);
+    }
 
-int test(struct Accelerometer acc) {
-    printk("Device: %p\n", acc.device);
-    printk("Pins: %d, %d, %d\n", acc.pins.pin_x, acc.pins.pin_y, acc.pins.pin_z);
-    printk("Values: %d, %d, %d\n", acc.data.x, acc.data.y, acc.data.z);
-    
     return 0;
 }
-/*
-int read_accelerometer(const struct  *device, struct AccelerationData *data)
-{
-    int result = 0;
 
-    result = sensor_sample_fetch(device);
-    if (result < 0) {
-        printk("Couldn't fetch sample, error %d.\n", result);
-        return result;
-    }
+int initialize_accelerometer(void) 
+{
+    int err = 0;
+
+    for (int i = 0; i < ARRAY_SIZE(channels); i++) {
+		if (!device_is_ready(channels[i].dev)) {
+			printk("Channel %d isn't ready?\n", i);
+			return -1;
+		}
+
+		err = adc_channel_setup_dt(&channels[i]);
+		if (err < 0) {
+			printk("Channel %d failed with setup, err %d.\n", i, err);
+			return -1;
+		}
+	}
+
+    return 0;
+}
+
+int read_data(struct AccelerationData *data) 
+{
+    data->x = 0;
+    data->y = 0;
+    data->z = 0;
+    data->direction = 0;
     
-    struct sensor_value readings[3];
-    for (size_t i = 0; i < CHANNEL_NO; i++) {
-        result = sensor_channel_get(device, channels[i], &readings[i]);
-        if (result < 0) {
-            printk("Error with reading axis %d, error %d.\n", i, result);
-            return result;
+    int16_t temp;
+    int32_t large_temp;
+    struct adc_sequence temp_seq = {
+        .buffer = &temp,
+        .buffer_size = sizeof(temp)
+    };
+    int err;
+
+    for (int i = 0; sizeof(channels); i++) {
+        temp = 0;
+        
+        // Setup of temp_seq
+        err = adc_sequence_init_dt(&channels[i], &temp_seq);
+        if (err < 0) {
+            printk("Failed to set up channel %d, aborting measurement.Err %d.\n", i+1, err);
+            return err;
+        }
+
+        // Something something read request
+        err = adc_read(channels[i].dev, &temp_seq);
+        if (err < 0) {
+            printk("Failed to read channel %d, aborting measurement.Err %d.\n", i+1, err);
+            return err;
+        }
+
+        // Converts whatever magic happened inside the computer to a millivolt value
+        // (accelerometer should provide ~1600 for still and ~1900 for the side affected by gravity)
+        err = adc_raw_to_millivolts_dt(&channels[i], &large_temp);
+        if (err < 0) {
+            printk("Error with parsing channel %d, aborting measurement.\n", i+1);
+            return err;
+        }
+
+        // Assign data to the bundle of measurements
+        switch (i) {
+            case 0:
+                data->x = temp;
+                break;
+            case 1:
+                data->y = temp;
+                break;
+            case 2:
+                data->z = temp;
+                break;
         }
     }
 
-    double val_x, val_y, val_z;
-    val_x = sensor_value_to_double(&readings[0]);
-    val_y = sensor_value_to_double(&readings[1]);
-    val_z = sensor_value_to_double(&readings[2]);
-
-    printk("Values: x = %.2f, y = %.2f, z = %.2f.\n", val_x, val_y, val_z);
+    calculate_direction(data);
 
     return 0;
 }
-*/
+
+static int calculate_direction(struct AccelerationData *data)
+{
+    data->direction = 0;
+    return 0;
+}

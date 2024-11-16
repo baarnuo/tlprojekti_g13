@@ -5,9 +5,7 @@
         status = "okay";
         compatible = "adi,gy61";
         //label = "gy61";
-        x-chan = <&ch1>;
-        y-chan = <&ch2>;
-        z-chan = <&ch3>;
+        io-channels = <&adc 0>, <&adc 1>, <&adc 2>;
     };
 
     aliases {
@@ -21,26 +19,32 @@
     #size-cells = <0>;
 
     ch1: channel@0 {
+        status = "okay";
         reg = <0>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN0>;
+        zephyr,resolution = <12>;
     };
 
     ch2: channel@1 {
+        status = "okay";
         reg = <1>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN1>;
+        zephyr,resolution = <12>;
     };
 
     ch3: channel@2 {
+        status = "okay";
         reg = <2>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN2>;
+        zephyr,resolution = <12>;
     };
 };    
