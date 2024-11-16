@@ -1,0 +1,17 @@
+description: "A crappy attempt at an accelerometer sensor device."
+
+compatible: "adi,gy61"
+
+properties:
+  status:
+    required: true
+    type: string
+  x-chan:
+    required: true
+    type: phandle
+  y-chan:
+    required: true
+    type: phandle
+  z-chan:
+    required: true
+    type: phandle

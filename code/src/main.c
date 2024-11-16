@@ -3,7 +3,6 @@
 
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/drivers/adc.h>
 #include <zephyr/sys/util_macro.h>
 #include <zephyr/kernel.h>
 
@@ -118,7 +117,7 @@ int main(void)
         return -1;
     }
 
-    test();
+    initialize_accelerometer();
     
     // Blink the status led to let people know the device is on and running as it should
     while (1) {

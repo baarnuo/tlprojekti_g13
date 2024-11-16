@@ -7,6 +7,3 @@ project(accel_sensor)
 target_sources(app PRIVATE src/main.c)
 target_sources(app PRIVATE src/acc_service.c)
 target_sources(app PRIVATE src/acc_sensor.c)
-
-# Please let this help with the sensor devicetree
-set (DTS_ROOT "dts")

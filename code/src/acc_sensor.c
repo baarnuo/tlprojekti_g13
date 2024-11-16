@@ -7,12 +7,28 @@ const struct device *const acc_device =  DEVICE_DT_GET(ACCELEROMETER);
 #error "No accelerometer node"
 #endif
 
-
-
 #define CHANNEL_NO 3
 
-int test(void) {
-    printk("test");
+struct Accelerometer initialize_accelerometer(void) 
+{
+    struct Accelerometer acc = {
+        .device = acc_device,
+        .pins.pin_x = DT_PROP(ACCELEROMETER, x_chan),
+        .pins.pin_y = DT_PROP(ACCELEROMETER, y_chan),
+        .pins.pin_z = DT_PROP(ACCELEROMETER, z_chan),
+        .data.x = 0,
+        .data.y = 0,
+        .data.z = 0,
+        .direction = 0,
+    };
+
+    return acc;
+}
+
+int test(struct Accelerometer acc) {
+    printk("Device: %p\n", acc.device);
+    printk("Pins: %d, %d, %d\n", acc.pins.pin_x, acc.pins.pin_y, acc.pins.pin_z);
+    printk("Values: %d, %d, %d\n", acc.data.x, acc.data.y, acc.data.z);
     
     return 0;
 }

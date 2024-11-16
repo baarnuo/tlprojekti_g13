@@ -5,6 +5,13 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
+#include <zephyr/drivers/adc.h>
+
+struct Pins {
+    uint16_t pin_x;
+    uint16_t pin_y;
+    uint16_t pin_z;
+};
 
 struct AccelerationData {
     int16_t x;
@@ -22,11 +29,13 @@ enum Direction {
 };
 
 struct Accelerometer {
-    struct device *device;
+    const struct device *device;
+    struct Pins pins;
     struct AccelerationData data;
-    enum Direction direction;
+    uint16_t direction;
 };
 
-int test(void);
+int test(struct Accelerometer acc);
+struct Accelerometer initialize_accelerometer(void);
 
 #endif

@@ -1,8 +1,17 @@
 // help I'm lost
 
 / {
+    acc: gy61 {
+        status = "okay";
+        compatible = "adi,gy61";
+        //label = "gy61";
+        x-chan = <&ch1>;
+        y-chan = <&ch2>;
+        z-chan = <&ch3>;
+    };
+
     aliases {
-        accel = &sen1;
+        accel = &acc;
     };
 };
 
@@ -11,22 +20,7 @@
     #address-cells = <1>;
     #size-cells = <0>;
 
-    gy61 {
-        status = "okay";
-        compatible = "analogdevices,gy61";
-        #address-cells = <1>;
-        #size-cells = <0>;
-    
-        sen1: sensor@0 {
-            status = "okay";
-            reg = <0>;
-            x_chan = <&adc 0>;
-            y_chan = <&adc 1>;
-            z_chan = <&adc 2>;
-        };
-    };
-
-    channel@0 {
+    ch1: channel@0 {
         reg = <0>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
@@ -34,7 +28,7 @@
         zephyr,input-positive = <NRF_SAADC_AIN0>;
     };
 
-    channel@1 {
+    ch2: channel@1 {
         reg = <1>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
@@ -42,7 +36,7 @@
         zephyr,input-positive = <NRF_SAADC_AIN1>;
     };
 
-    channel@2 {
+    ch3: channel@2 {
         reg = <2>;
         zephyr,gain = "ADC_GAIN_1_6";
         zephyr,reference = "ADC_REF_INTERNAL";
