@@ -28,6 +28,8 @@
 #define BLINK_INTERVAL 500
 #define MEASUREMENT_INTERVAL 5000
 
+bool accelerometer_online = false;
+
 // 
 static const struct bt_data advertisement_data[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
@@ -122,8 +124,9 @@ int main(void)
         printk("Failed to initialize accelerometer, error code %d.\n", error);
         return -1;
     }
-    
-    test();
+    accelerometer_online = true;
+
+    printk("Device set up succesfully.\n");
     
     // Blink the status led to let people know the device is on and running as it should
     while (1) {
@@ -136,10 +139,12 @@ int main(void)
 void measurement_thread(void)
 {
     while (1) {
-        struct AccelerationData data;
-        read_data(&data);
-        printk("Read data: x = %d, y = %d, z = %d, dir = %d.\n", data.x, data.y, data.z, data.direction);
-        k_sleep(K_MSEC(MEASUREMENT_INTERVAL));
+        if (accelerometer_online) {
+            struct AccelerationData data;
+            read_data(&data);
+            printk("Read data: x = %d, y = %d, z = %d, dir = %d.\n", data.x, data.y, data.z, data.direction);
+            k_sleep(K_MSEC(MEASUREMENT_INTERVAL));
+        } 
     }
 }
 

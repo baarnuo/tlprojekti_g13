@@ -23,7 +23,6 @@ enum Direction {
     BACK
 };
 
-int test(void);
 int initialize_accelerometer(void);
 int read_data(struct AccelerationData *data);
 
