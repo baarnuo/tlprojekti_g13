@@ -23,6 +23,8 @@ int read_and_notify(void)
         return -1;
     }
 
+    //printk("Values: x = %d, y = %d, z = %d, dir = %d\n", reading.x, reading.y, reading.z, reading.direction);
+
     int err = accelerometer_notification();
     if (err < 0) {
         //printk("read_and_notify(): error %d sending notification.\n", err);

@@ -27,16 +27,18 @@
 #define BLINK_INTERVAL 500
 #define MEASUREMENT_INTERVAL 5000
 
-
 // 
 static const struct bt_data advertisement_data[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
     BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LENGTH),
+    // Our accelerometer service's UUID (but in a weird format)
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0xf0, 0x34),
 };
 
 // 
 static const struct bt_data scan_data[] = {
-    BT_DATA_BYTES(BT_DATA_UUID128_ALL, sizeof(ACCELERATION_SERVICE_UUID))
+    BT_DATA_BYTES(BT_DATA_UUID128_ALL, sizeof(ACCELERATION_NOTIFICATION_UUID)),
+    BT_DATA_BYTES(BT_DATA_UUID128_ALL, sizeof(ACCELERATION_INDICATION_UUID))
 };
 
 // Advertising: can be connected to, advertises twice a second, not directed
