@@ -6,36 +6,48 @@ static bool indicate_enabled;
 // A collection of parameters concerning indication settings
 static struct bt_gatt_indicate_params indication_parameters;
 
-// X, Y and Z axle values, the rotation of the device
-struct AccelerationData accelerometer_values;
-struct AccelerationData accelerometer_results;
-enum Direction direction;
+// Holds current reading data
+struct AccelerationData reading;
 
-void simulate_measurement(void)
+// Declarations
+static int accelerometer_notification(void);
+static int accelerometer_indication(void);
+static void indication_callback(struct bt_conn *connection, struct bt_gatt_indicate_params *parameters, uint8_t error);
+
+
+int read_and_notify(void) 
 {
-    accelerometer_values.x = 1590 + (rand() % 20);
-    accelerometer_values.y = 1590 + (rand() % 20);
-    accelerometer_values.z = 1890 + (rand() % 20);
+    reading = read_data();
+    if (reading.direction == 0) {
+        //printk("read_and_notify(): error with getting a reading. No notification sent.\n");
+        return -1;
+    }
 
-    accelerometer_results.x = (accelerometer_values.x - 1600) * 32;   
-    accelerometer_results.y = (accelerometer_values.y - 1600) * 32;   
-    accelerometer_results.z = (accelerometer_values.z - 1600) * 32;
-
-    accelerometer_raw_notification();
-    accelerometer_calculated_notification();
-
-    // Testing purposes
-    simulate_direction();
-
-    printk("x: %d, y: %d, z: %d, x_acc: %d, y_acc: %d, z_acc: %d\n", 
-        accelerometer_values.x, accelerometer_values.y, accelerometer_values.z, 
-        accelerometer_results.x, accelerometer_results.y, accelerometer_results.z);
+    int err = accelerometer_notification();
+    if (err < 0) {
+        //printk("read_and_notify(): error %d sending notification.\n", err);
+        return err;
+    }
+    return 0;
 }
 
-void simulate_direction(void) 
+int read_and_indicate(void) 
 {
-    direction = rand() % 6;
+    reading = read_data();
+    if (reading.direction == 0) {
+        //printk("read_and_indicate(): error with getting a reading. No indication sent.\n");
+        return -1;
+    }
+
+    int err = accelerometer_indication();
+    if (err < 0) {
+        //printk("read_and_indicate(): error %d sending indication.\n", err);
+        return err;
+    }
+    return 0;
 }
+
+// Internal workings below
 
 // What gets called when the device you're connected to wants to change notification settings(?)
 static void notification_configuration_change(const struct bt_gatt_attr *attributes, uint16_t value)
@@ -58,55 +70,40 @@ BT_GATT_SERVICE_DEFINE(
     accelerometer, 
     // Sets up the service for acceleration measurements
     BT_GATT_PRIMARY_SERVICE(ACCELERATION_SERVICE_UUID),
-    // Notifications for the raw values
-    BT_GATT_CHARACTERISTIC(ACCELERATION_VALUES_UUID, BT_GATT_CHRC_NOTIFY, BT_GATT_PERM_READ, NULL, NULL, &accelerometer_values),
+    //
+    BT_GATT_CHARACTERISTIC(ACCELERATION_NOTIFICATION_UUID, BT_GATT_CHRC_NOTIFY, BT_GATT_PERM_READ, NULL, NULL, &reading),
     BT_GATT_CCC(notification_configuration_change, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-    // Notifications for the acceleration values
-    BT_GATT_CHARACTERISTIC(ACCELERATION_RESULTS_UUID, BT_GATT_CHRC_NOTIFY, BT_GATT_PERM_READ, NULL, NULL, &accelerometer_results),
-    BT_GATT_CCC(notification_configuration_change, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
-    // Indication for the directional value
-    BT_GATT_CHARACTERISTIC(ACCELERATION_DIRECTION_UUID, BT_GATT_CHRC_INDICATE, BT_GATT_PERM_READ, NULL, NULL, &direction),
+
+    BT_GATT_CHARACTERISTIC(ACCELERATION_INDICATION_UUID, BT_GATT_CHRC_INDICATE, BT_GATT_PERM_READ, NULL, NULL, &reading),
     BT_GATT_CCC(indication_configuration_change, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 );
 
-int accelerometer_raw_notification(void)
+static int accelerometer_notification(void)
 {
     if (!notify_enabled) {
         return -EACCES;
     }
     // Looks up the acceleration values characteristic (or attribute?) based on its assigned ID
-    return bt_gatt_notify(NULL, bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_VALUES_UUID), &accelerometer_values, sizeof(accelerometer_values));
+    return bt_gatt_notify(NULL, bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_NOTIFICATION_UUID), &reading, sizeof(reading));
 }
 
-int accelerometer_calculated_notification(void)
+static int accelerometer_indication(void)
 {
-    if (!notify_enabled) {
+    if(!indicate_enabled) {
         return -EACCES;
     }
-    // Looks up the acceleration values characteristic (or attribute?) based on its assigned ID
-    return bt_gatt_notify(NULL, bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_RESULTS_UUID), &accelerometer_results, sizeof(accelerometer_results));
+
+    indication_parameters.attr = bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_INDICATION_UUID);
+	indication_parameters.func = indication_callback;
+	indication_parameters.destroy = NULL;
+	indication_parameters.data = &reading;
+	indication_parameters.len = sizeof(reading);
+
+    return bt_gatt_indicate(NULL, &indication_parameters);
 }
 
 // Gets called when an indication has been sent and is answered to
 static void indication_callback(struct bt_conn *connection, struct bt_gatt_indicate_params *parameters, uint8_t error) 
 {
     printk("Indication callback\n");
-
-    // LOG_DBG() refuses to build for some reason?
-    //LOG_DBG("Indication callback, indication %s.\n", error == 0U ? "succesful" : "failed");
-}
-
-int accelerometer_indication(void)
-{
-    if(!indicate_enabled) {
-        return -EACCES;
-    }
-
-    indication_parameters.attr = bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_DIRECTION_UUID);
-	indication_parameters.func = indication_callback;
-	indication_parameters.destroy = NULL;
-	indication_parameters.data = &direction;
-	indication_parameters.len = sizeof(direction);
-
-    return bt_gatt_indicate(NULL, &indication_parameters);
 }

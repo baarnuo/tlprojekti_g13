@@ -14,16 +14,8 @@ struct AccelerationData {
     int16_t direction;
 };
 
-enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    AHEAD,
-    BACK
-};
-
+// Accelerometer setup and a means of getting a reading
 int initialize_accelerometer(void);
-int read_data(struct AccelerationData *data);
+struct AccelerationData read_data(void);
 
 #endif

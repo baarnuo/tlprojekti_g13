@@ -8,7 +8,6 @@
 
 #include <dk_buttons_and_leds.h>
 
-#include "acc_sensor.h"
 #include "acc_service.h"
 
 // How often advertisements are sent out (in units of 0.625 milliseconds, equates to 500 milliseconds)
@@ -28,7 +27,6 @@
 #define BLINK_INTERVAL 500
 #define MEASUREMENT_INTERVAL 5000
 
-bool accelerometer_online = false;
 
 // 
 static const struct bt_data advertisement_data[] = {
@@ -77,7 +75,8 @@ struct bt_conn_cb connection_callbacks = {
 static void button_press(uint32_t state, uint32_t change)
 {
     if (change & DATA_BUTTON) {
-        accelerometer_indication();
+        read_and_indicate();
+        
         // Debounce
         k_sleep(K_MSEC(1));
     }
@@ -87,8 +86,9 @@ static void button_press(uint32_t state, uint32_t change)
 int main(void)
 {
     bool blink_timer = 1;
-
     int error;
+
+    printk("Setting up the device.\n");
 
     // Led setup
     error = dk_leds_init();
@@ -96,6 +96,7 @@ int main(void)
         printk("Led setup failed, error code %d.\n", error);
         return -1;
     }
+    printk("Leds initialized.\n");
 
     // Button setup
     error = dk_buttons_init(button_press);
@@ -103,6 +104,7 @@ int main(void)
         printk("Button setup failed, error code %d.\n", error);
         return -1;
     }
+    printk("Buttons initialized.\n");
 
     // Bluetooth initialization
     error = bt_enable(NULL);
@@ -110,6 +112,7 @@ int main(void)
         printk("Bluetooth setup failed, error code %d.\n", error);
         return -1;
     }
+    printk("Bluetooth initialized.\n");
 
     // Bluetooth startup
     error = bt_le_adv_start(advertisement_parameters, advertisement_data, ARRAY_SIZE(advertisement_data),
@@ -118,13 +121,7 @@ int main(void)
         printk("Bluetooth startup failed, error code %d.\n", error);
         return -1;
     }
-
-    error = initialize_accelerometer();
-    if (error) {
-        printk("Failed to initialize accelerometer, error code %d.\n", error);
-        return -1;
-    }
-    accelerometer_online = true;
+    printk("Bluetooth started.\n");
 
     printk("Device set up succesfully.\n");
     
@@ -138,13 +135,15 @@ int main(void)
 // A separate thread to take measurements independetly of the main loop
 void measurement_thread(void)
 {
+    int error = initialize_accelerometer();
+    if (error) {
+        printk("Failed to initialize accelerometer, error code %d.\n", error);
+        return;
+    }
+    
     while (1) {
-        if (accelerometer_online) {
-            struct AccelerationData data;
-            read_data(&data);
-            printk("Read data: x = %d, y = %d, z = %d, dir = %d.\n", data.x, data.y, data.z, data.direction);
-            k_sleep(K_MSEC(MEASUREMENT_INTERVAL));
-        } 
+        read_and_notify();
+        k_sleep(K_MSEC(MEASUREMENT_INTERVAL));
     }
 }
 

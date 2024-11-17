@@ -26,6 +26,7 @@
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN0>;
         zephyr,resolution = <12>;
+        zephyr,oversampling = <2>;
     };
 
     ch2: channel@1 {
@@ -36,6 +37,7 @@
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN1>;
         zephyr,resolution = <12>;
+        zephyr,oversampling = <2>;
     };
 
     ch3: channel@2 {
@@ -46,5 +48,6 @@
         zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 20)>;
         zephyr,input-positive = <NRF_SAADC_AIN2>;
         zephyr,resolution = <12>;
+        zephyr,oversampling = <2>;
     };
 };    
