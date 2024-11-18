@@ -1,6 +1,7 @@
 code/build/*
 build
-rpi/mysql_credentials.*
-linux/logindata.*
+# Secrets
+kotikone/__pycache__/
+kotikone/mysql_credentials.py
 rpi/mysql_credentials.py
 linux/logindata.php
