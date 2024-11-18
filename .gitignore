@@ -1,2 +1,6 @@
 code/build/*
 build
+rpi/mysql_credentials.*
+linux/logindata.*
+rpi/mysql_credentials.py
+linux/logindata.php
