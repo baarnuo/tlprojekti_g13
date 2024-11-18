@@ -12,11 +12,25 @@ Projekti suoritettiin OAMK:n tietotekniikan koulutusohjelman toisen vuosikurssin
 
 [@baarnuo](https://github.com/baarnuo/)
 
-## Arkkitehtuurikuva
-
-![Arkkitehtuurikuva](readme_images/Arkkitehtuurikuva_2.png?raw=true)
-
 ## Projektin vaiheet
 
-### Viikko 1
-Scrummiin, kanbaniin ja GitHub-projekteihin tutustuminen, nRF5430 DK- ja Raspberry Pi -alustojen käyttöönotto. Linuxin perusteet.
+#### Arkkitehtuurikuva
+![Arkkitehtuurikuva](readme_images/Arkkitehtuurikuva_2.png?raw=true)
+
+#### Hieno laitteistomme
+![Anturi, nRF5340DK, Raspberry Pi ja tiedonsiirtoyhteys](readme_images/setup.jpg?raw=true)
+
+### nRF 5340DK
+[luki kiihtyvyysanturia ja siirsi datan BLE-yhteydellä, C käytössä]
+
+### Raspberry Pi
+[välikäsi datan siirrossa nettiin, Python käytössä]
+
+### Linux-serveri ja MySQL-tietokanta
+[hyödynsimme koululta saatua Linux-serveriä linuxin perusteiden opetteluun, sekä asetimme serverille MySQL-tietokantamme]
+
+### Vau, koneoppimista
+[k-means-algoritmi]
+
+### Muut taidot
+[viikkopalaverit, hyödynsimme kanban-taulua, scrum jne.]
