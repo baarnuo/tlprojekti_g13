@@ -1,3 +1,9 @@
+/*
+    An accelerometer reader based on the ADC library available on Zephyr. 
+    Connects pins defined by the overlay to adc readers, and provides functions 
+    for setting up the pins and taking readings.
+*/
+
 #ifndef ACC_SENSOR_H
 #define ACC_SENSOR_H
 

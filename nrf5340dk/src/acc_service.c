@@ -1,3 +1,10 @@
+/*
+    Accelerometer service used for advertising the x, y, z and direction values collected from our little device.
+    
+    Used in conjunction with our sensor, so the sensor is included here and read_and_notify and read_and_indicate
+    are built-in.
+*/
+
 #include "acc_service.h"
 
 // Whether notification messages should get sent
@@ -14,7 +21,7 @@ static int accelerometer_notification(void);
 static int accelerometer_indication(void);
 static void indication_callback(struct bt_conn *connection, struct bt_gatt_indicate_params *parameters, uint8_t error);
 
-
+// Take accelerometer reading and send a notification
 int read_and_notify(void) 
 {
     reading = read_data();
@@ -33,6 +40,7 @@ int read_and_notify(void)
     return 0;
 }
 
+// Take accelerometer reading and send an indication
 int read_and_indicate(void) 
 {
     reading = read_data();
@@ -80,6 +88,7 @@ BT_GATT_SERVICE_DEFINE(
     BT_GATT_CCC(indication_configuration_change, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 );
 
+// Sends the reading data to a connected device that's subscribed to notifications
 static int accelerometer_notification(void)
 {
     if (!notify_enabled) {
@@ -89,6 +98,7 @@ static int accelerometer_notification(void)
     return bt_gatt_notify(NULL, bt_gatt_find_by_uuid(NULL, 0, ACCELERATION_NOTIFICATION_UUID), &reading, sizeof(reading));
 }
 
+// Sends the reading data to a connected device that's subscribed to indications
 static int accelerometer_indication(void)
 {
     if(!indicate_enabled) {

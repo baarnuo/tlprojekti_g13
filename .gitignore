@@ -1,5 +1,6 @@
 code/build/*
 build
+kotikone/sensor_values*.csv
 # Secrets
 kotikone/__pycache__/
 kotikone/mysql_credentials.py

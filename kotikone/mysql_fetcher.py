@@ -1,3 +1,5 @@
+# Extra Linux assignment
+
 import mysql.connector
 from mysql_credentials import add, u, pw, db
 import csv

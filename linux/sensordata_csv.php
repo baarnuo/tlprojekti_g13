@@ -1,3 +1,5 @@
+// Extra Linux assignment
+
 <?php
 include '/var/www/scripts/logindata.php';
 
