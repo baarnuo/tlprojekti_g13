@@ -1,3 +1,9 @@
+/*
+    An accelerometer reader based on the ADC library available on Zephyr. 
+    Connects pins defined by the overlay to adc readers, and provides functions 
+    for setting up the pins and taking readings.
+*/
+
 #include "acc_sensor.h"
 
 #define ACCELEROMETER DT_ALIAS(accel)
@@ -14,7 +20,7 @@ static const struct adc_dt_spec channels[] = {
     ADC_DT_SPEC_GET_BY_IDX(DT_PATH(gy61), 2)
 };
 
-// Declarations for 
+// Declarations for debug/test functions
 static int calculate_direction(struct AccelerationData data);
 static int channel_print(void);
 static int sequence_print(struct adc_sequence sequence);
@@ -109,6 +115,7 @@ struct AccelerationData read_data(void)
     return data;
 }
 
+// Test/stepping stone
 static int calculate_direction(struct AccelerationData data)
 {
     int dir = (data.direction > 5 ? 1 : data.direction + 1);

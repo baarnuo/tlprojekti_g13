@@ -1,5 +1,6 @@
 {
     "nrf-connect.applications": [
         "${workspaceFolder}"
-    ]
+    ],
+    "cmake.sourceDirectory": "C:/nordic/myapps/tlprojekti_g13/nrf5340dk"
 }

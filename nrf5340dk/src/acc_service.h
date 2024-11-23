@@ -1,3 +1,10 @@
+/*
+    Accelerometer service used for advertising the x, y, z and direction values collected from our little device.
+    
+    Used in conjunction with our sensor, so the sensor is included here and read_and_notify and read_and_indicate
+    are built-in.
+*/
+
 #ifndef ACC_SERVICE_H
 #define ACC_SERVICE_H
 

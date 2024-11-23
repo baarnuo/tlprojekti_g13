@@ -1,3 +1,5 @@
+// Extra Linux assignment
+
 <?php
 echo "Running sensor data. ";
 
@@ -9,7 +11,7 @@ $conn = new mysqli($servername, $username, $password, $database) or die("... Con
 
 echo "... Fetching data. ";
 
-$sql = "SELECT * FROM rawdata";
+$sql = "SELECT x_val, y_val, z_val, direction, mac_address FROM rawdata ORDER BY id_measurement DESC LIMIT 20";
 $result = $conn->query($sql);
 
 echo "... Data fetched, row count " . $result->num_rows . ".";

@@ -1,3 +1,6 @@
+# Script to read the accelerometer data sent over a BLE connection,
+# and to pass it down to our database
+
 import asyncio
 
 import mysql.connector
