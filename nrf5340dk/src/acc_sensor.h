@@ -12,16 +12,30 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/adc.h>
+// For direction calculations
+#include <math.h>
 
 struct AccelerationData {
-    int16_t x;
-    int16_t y;
-    int16_t z;
-    int16_t direction;
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
+    uint16_t direction;
+};
+
+struct DirectionalData {
+    uint16_t x_deg;
+    uint16_t y_deg;
+    uint16_t z_deg;
+    uint16_t magnitude;
+};
+
+struct AccelerometerMeasurement {
+    struct AccelerationData acceleration;
+    struct DirectionalData direction;
 };
 
 // Accelerometer setup and a means of getting a reading
 int initialize_accelerometer(void);
-struct AccelerationData read_data(void);
+struct AccelerometerMeasurement read_data(void);
 
 #endif

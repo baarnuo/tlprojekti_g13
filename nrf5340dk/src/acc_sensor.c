@@ -21,7 +21,7 @@ static const struct adc_dt_spec channels[] = {
 };
 
 // Declarations for debug/test functions
-static int calculate_direction(struct AccelerationData data);
+static int calculate_direction(struct AccelerometerMeasurement *measurement);
 static int channel_print(void);
 static int sequence_print(struct adc_sequence sequence);
 
@@ -52,14 +52,22 @@ int initialize_accelerometer(void)
     return 0;
 }
 
-// Read the accelerometer, return struct holding x, y and z values and a direction
-struct AccelerationData read_data(void) 
+// Read the accelerometer, return struct holding structs of readings and derived angles
+struct AccelerometerMeasurement read_data(void) 
 {
-    struct AccelerationData data = {
-        .x = 0,
-        .y = 0,
-        .z = 0,
-        .direction = 0
+    struct AccelerometerMeasurement data = {
+        .acceleration = {
+            .x = 0,
+            .y = 0,
+            .z = 0,
+            .direction = 0
+        },
+        .direction = {
+            .x_deg = 0,
+            .y_deg = 0,
+            .z_deg = 0,
+            .magnitude = 0
+        }
     };
     
     int16_t temp = 0;
@@ -98,28 +106,92 @@ struct AccelerationData read_data(void)
         // Assign data to the bundle of measurements
         switch (i) {
             case 0:
-                data.x = temp;
+                data.acceleration.x = temp;
                 break;
             case 1:
-                data.y = temp;
+                data.acceleration.y = temp;
                 break;
             case 2:
-                data.z = temp;
+                data.acceleration.z = temp;
                 break;
         }
     }
 
-    // At this point this doesn't do much
-    data.direction = calculate_direction(data);
+    // 
+    int res = calculate_direction(&data);
+    if (res < 0 || data.acceleration.direction == 0) {
+        printk("Failed to calculate direction.\n");
+    }
 
     return data;
 }
 
-// Test/stepping stone
-static int calculate_direction(struct AccelerationData data)
-{
-    int dir = (data.direction > 5 ? 1 : data.direction + 1);
-    return dir;
+// Calculates the strength of gravity affecting the device and its direction
+static int calculate_direction(struct AccelerometerMeasurement *measurement)
+{   
+    // Base = voltage when an axis is at 0G, high = voltage when axis is at 1G, one_g = 1G
+    // (these are just estimates, the exact value could be gotten through an average of results)
+    const uint16_t base = 1910, high = 2275, one_g = high - base;
+    const double pi = 3.1415926;
+
+    // Variance of each axis from 0G
+    int16_t real_x = (measurement->acceleration.x - base);
+    int16_t real_y = (measurement->acceleration.y - base);
+    int16_t real_z = (measurement->acceleration.z - base);
+    // The length of the gravity vector
+    uint16_t mag = sqrt(pow(real_x, 2) + pow(real_y, 2) + pow(real_z, 2));
+
+    // Angle of each axis in radians
+    double rad_x = acos((double)real_x / mag);
+    double rad_y = acos((double)real_y / mag);
+    double rad_z = acos((double)real_z / mag);
+
+    // Angle of each axis in degrees
+    double deg_x = (rad_x * 180 / pi);
+    double deg_y = (rad_y * 180 / pi);
+    double deg_z = (rad_z * 180 / pi);
+
+    uint16_t final_x = (uint16_t)deg_x;
+    uint16_t final_y = (uint16_t)deg_y;
+    uint16_t final_z = (uint16_t)deg_z;
+    uint16_t g_val = (uint16_t)((1000*mag)/one_g);
+
+    // Prints
+    //printk("x: %dmV, %d°, y: %dmV, %d°, z: %dmV, %d°, magnitude: %d, acceleration (thousandths of 1G): %d.\n", 
+        //measurement->acceleration.x, final_x, measurement->acceleration.y, final_y, measurement->acceleration.z, final_z, mag, g_val);
+    
+    // Assign all values
+    measurement->direction.x_deg = final_x;
+    measurement->direction.y_deg = final_y;
+    measurement->direction.z_deg = final_z;
+    measurement->direction.magnitude = g_val;
+    // The acceleration.direction value (one of six)
+    // X points up
+    if (final_x < 45) {
+        measurement->acceleration.direction = 1;
+    }
+    // X points down
+    else if (135 < final_x) {
+        measurement->acceleration.direction = 2;
+    }
+    // Y points up
+    else if (final_y < 45) {
+        measurement->acceleration.direction = 3;
+    }
+    // Y points down
+    else if (135 < final_y) {
+        measurement->acceleration.direction = 4;
+    }
+    // Z points up
+    else if (final_z < 45) {
+        measurement->acceleration.direction = 5;
+    }
+    // Z points down
+    else if (135 < final_z) {
+        measurement->acceleration.direction = 6;
+    }
+
+    return 0;
 }
 
 // Debug
