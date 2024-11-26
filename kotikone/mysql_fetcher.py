@@ -19,8 +19,9 @@ file = open("sensor_values2.csv", "w+")
 file.truncate(0)
 # unix gets a single newline at the end of each row, delimiter ; puts semicolons between fields
 writer = csv.writer(file, dialect="unix", delimiter=';')
+writer.writerow(["id_measurement", "timestamp", "x", "y", "z", "direction", "x_deg", "y_deg", "z_deg", "gravity", "mac_address"])
 
 # Loop through the rows and write data
-for (id, time, x, y, z, dir, mac) in cursor:
-    row = [id, time, x, y, z, dir, mac]
+for (id, time, x, y, z, dir, x_deg, y_deg, z_deg, grav, mac) in cursor:
+    row = [id, time, x, y, z, dir, x_deg, y_deg, z_deg, grav, mac]
     writer.writerow(row)
