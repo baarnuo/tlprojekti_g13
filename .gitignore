@@ -1,9 +1,12 @@
 code/build/*
 build
 kotikone/sensor_values*.csv
+kotikone/nornal/sensor_values*.csv
+!kotikone/nornal/sensor_values_example.csv
 !kotikone/sensor_values_example.csv
 # Secrets
 kotikone/__pycache__/
 kotikone/mysql_credentials.py
+kotikone/nornal/mysql_credentials.py
 rpi/mysql_credentials.py
 linux/logindata.php
