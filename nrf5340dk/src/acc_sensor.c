@@ -134,62 +134,38 @@ static int calculate_direction(struct AccelerometerMeasurement *measurement)
     const uint16_t base = 1910, high = 2275, one_g = high - base;
     const double pi = 3.1415926;
 
-    // Variance of each axis from 0G
-    int16_t real_x = (measurement->acceleration.x - base);
-    int16_t real_y = (measurement->acceleration.y - base);
-    int16_t real_z = (measurement->acceleration.z - base);
-    // The length of the gravity vector
-    uint16_t mag = sqrt(pow(real_x, 2) + pow(real_y, 2) + pow(real_z, 2));
-
-    // Angle of each axis in radians
-    double rad_x = acos((double)real_x / mag);
-    double rad_y = acos((double)real_y / mag);
-    double rad_z = acos((double)real_z / mag);
-
+    int16_t x = measurement->acceleration.x, y = measurement->acceleration.y, z = measurement->acceleration.z;
+    // How much each axel deviates from the baseline
+    int16_t real[] = {x - base, y - base, z - base};
+    // Length of the vector (aka strength of acceleration)
+    uint16_t mag = sqrt(pow(real[0], 2) + pow(real[1], 2) + pow(real[2], 2));
     // Angle of each axis in degrees
-    double deg_x = (rad_x * 180 / pi);
-    double deg_y = (rad_y * 180 / pi);
-    double deg_z = (rad_z * 180 / pi);
+    double deg[3];
 
-    uint16_t final_x = (uint16_t)deg_x;
-    uint16_t final_y = (uint16_t)deg_y;
-    uint16_t final_z = (uint16_t)deg_z;
+    uint16_t final[3];
+
+    for (int i = 0; i < 3; i++) {
+        deg[i] = (acos((double)real[i] / mag) * 180 / pi);
+        final[i] = (uint16_t)deg[i];
+    }
+
     uint16_t g_val = (uint16_t)((1000*mag)/one_g);
 
     // Prints
-    //printk("x: %dmV, %d°, y: %dmV, %d°, z: %dmV, %d°, magnitude: %d, acceleration (thousandths of 1G): %d.\n", 
-        //measurement->acceleration.x, final_x, measurement->acceleration.y, final_y, measurement->acceleration.z, final_z, mag, g_val);
+    /*printk("x: %dmV, %d°, y: %dmV, %d°, z: %dmV, %d°, magnitude: %d, acceleration (thousandths of 1G): %d.\n", 
+        x, final[0], y, final[1], z, final[2], mag, g_val);*/
     
-    // Assign all values
-    measurement->direction.x_deg = final_x;
-    measurement->direction.y_deg = final_y;
-    measurement->direction.z_deg = final_z;
-    measurement->direction.magnitude = g_val;
     // The acceleration.direction value (one of six)
-    // X points up
-    if (final_x < 45) {
-        measurement->acceleration.direction = 1;
-    }
-    // X points down
-    else if (135 < final_x) {
-        measurement->acceleration.direction = 2;
-    }
-    // Y points up
-    else if (final_y < 45) {
-        measurement->acceleration.direction = 3;
-    }
-    // Y points down
-    else if (135 < final_y) {
-        measurement->acceleration.direction = 4;
-    }
-    // Z points up
-    else if (final_z < 45) {
-        measurement->acceleration.direction = 5;
-    }
-    // Z points down
-    else if (135 < final_z) {
-        measurement->acceleration.direction = 6;
-    }
+    // Calculated with a convolution neural network because the teacher wanted us to include one
+    uint16_t direction = cnn_direction(x, y, z);
+    //printk("Returned from cnn calc: %d", direction);
+
+    // Assign all values
+    measurement->direction.x_deg = final[0];
+    measurement->direction.y_deg = final[1];
+    measurement->direction.z_deg = final[2];
+    measurement->direction.magnitude = g_val;
+    measurement->acceleration.direction = direction;    
 
     return 0;
 }

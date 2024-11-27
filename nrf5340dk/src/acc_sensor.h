@@ -14,6 +14,7 @@
 #include <zephyr/drivers/adc.h>
 // For direction calculations
 #include <math.h>
+#include "acc_cnn_calc.h"
 
 struct AccelerationData {
     uint16_t x;
