@@ -58,13 +58,15 @@ plt.bar([1, 2, 3, 4, 5, 6], res2[0])
 plt.show()
 
 
-def write_to_file(w, file, label1, label2):
+def write_to_file(w):
+    file = open("acc_model_weights.h", "w+")
+    file.truncate(0)
 
     preamble = "#ifndef WEIGHTS_H_\n" + \
               "#define WEIGHTS_H_\n\n"
     postamble = "#endif"
     
-    string = "#define " + label1 + " {"
+    string = "#define WEIGHTS {"
 
     for i in range(len(w[0])):
         comma = "" if i == 0 else ", "
@@ -73,24 +75,19 @@ def write_to_file(w, file, label1, label2):
         string = string + st1 + "}"
     string = string + "}\n"
 
-    string = string +  "#define " + label2 + " {"
+    string2 = "#define BIASES {"
     st2 = ", ".join(str(num) for num in w[1])
-    string = string + st2 + "}\n\n"
+    string2 = string2 + st2 + "}\n\n"
 
     print(string)
 
     file.write(preamble)
     file.write(string)
+    file.write(string2)
     file.write(postamble)
-    return
-
-def save_weights(w0):
-    file = open("acc_model_weights.h", "w+")
-    file.truncate(0)
-
-    write_to_file(w0, file, "WEIGHTS", "BIASES")
 
     file.close()
     return
 
-save_weights(w0)
+
+write_to_file(w0)
