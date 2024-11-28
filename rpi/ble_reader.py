@@ -23,8 +23,8 @@ device_id = ""
 
 async def notification_callback(characteristic: BleakGATTCharacteristic, data: bytearray):
 	#print("".join([f"\\x{byte:02x}" for byte in data]))
-	# Unpacks the data into its four constituent variables
-	x, y, z, dir = unpack('<hhhh', data)
+	# Unpacks the data into its eight constituent variables
+	x, y, z, dir, x_deg, y_deg, z_deg, grav = unpack('<hhhhhhhh', data)
 	print(x, y, z, dir)
 	mydb = mysql.connector.connect(
 		host = add,
@@ -33,8 +33,8 @@ async def notification_callback(characteristic: BleakGATTCharacteristic, data: b
 		database = db
 		)
 	cursor = mydb.cursor()
-	query = "INSERT INTO rawdata (x_val, y_val, z_val, direction, mac_address) VALUES (%s, %s, %s, %s, %s)"
-	variables = (x, y, z, dir, device_id)
+	query = "INSERT INTO rawdata (x_val, y_val, z_val, direction, x_deg, y_deg, z_deg, gravity, mac_address) VALUES (%s, %s, %s, %s, %s)"
+	variables = (x, y, z, dir, x_deg, y_deg, z_deg, grav, device_id)
 	cursor.execute(query, variables)
 	mydb.commit()
 

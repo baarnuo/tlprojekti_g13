@@ -21,7 +21,7 @@ static const struct adc_dt_spec channels[] = {
 };
 
 // Declarations for debug/test functions
-static int calculate_direction(struct AccelerationData data);
+static int calculate_direction(struct AccelerometerMeasurement *measurement);
 static int channel_print(void);
 static int sequence_print(struct adc_sequence sequence);
 
@@ -52,14 +52,22 @@ int initialize_accelerometer(void)
     return 0;
 }
 
-// Read the accelerometer, return struct holding x, y and z values and a direction
-struct AccelerationData read_data(void) 
+// Read the accelerometer, return struct holding structs of readings and derived angles
+struct AccelerometerMeasurement read_data(void) 
 {
-    struct AccelerationData data = {
-        .x = 0,
-        .y = 0,
-        .z = 0,
-        .direction = 0
+    struct AccelerometerMeasurement data = {
+        .acceleration = {
+            .x = 0,
+            .y = 0,
+            .z = 0,
+            .direction = 0
+        },
+        .direction = {
+            .x_deg = 0,
+            .y_deg = 0,
+            .z_deg = 0,
+            .magnitude = 0
+        }
     };
     
     int16_t temp = 0;
@@ -98,28 +106,68 @@ struct AccelerationData read_data(void)
         // Assign data to the bundle of measurements
         switch (i) {
             case 0:
-                data.x = temp;
+                data.acceleration.x = temp;
                 break;
             case 1:
-                data.y = temp;
+                data.acceleration.y = temp;
                 break;
             case 2:
-                data.z = temp;
+                data.acceleration.z = temp;
                 break;
         }
     }
 
-    // At this point this doesn't do much
-    data.direction = calculate_direction(data);
+    // 
+    int res = calculate_direction(&data);
+    if (res < 0 || data.acceleration.direction == 0) {
+        printk("Failed to calculate direction.\n");
+    }
 
     return data;
 }
 
-// Test/stepping stone
-static int calculate_direction(struct AccelerationData data)
-{
-    int dir = (data.direction > 5 ? 1 : data.direction + 1);
-    return dir;
+// Calculates the strength of gravity affecting the device and its direction
+static int calculate_direction(struct AccelerometerMeasurement *measurement)
+{   
+    // Base = voltage when an axis is at 0G, high = voltage when axis is at 1G, one_g = 1G
+    // (these are just estimates, the exact value could be gotten through an average of results)
+    const uint16_t base = 1910, high = 2275, one_g = high - base;
+    const double pi = 3.1415926;
+
+    int16_t x = measurement->acceleration.x, y = measurement->acceleration.y, z = measurement->acceleration.z;
+    // How much each axel deviates from the baseline
+    int16_t real[] = {x - base, y - base, z - base};
+    // Length of the vector (aka strength of acceleration)
+    uint16_t mag = sqrt(pow(real[0], 2) + pow(real[1], 2) + pow(real[2], 2));
+    // Angle of each axis in degrees
+    double deg[3];
+
+    uint16_t final[3];
+
+    for (int i = 0; i < 3; i++) {
+        deg[i] = (acos((double)real[i] / mag) * 180 / pi);
+        final[i] = (uint16_t)deg[i];
+    }
+
+    uint16_t g_val = (uint16_t)((1000*mag)/one_g);
+
+    // Prints
+    /*printk("x: %dmV, %d°, y: %dmV, %d°, z: %dmV, %d°, magnitude: %d, acceleration (thousandths of 1G): %d.\n", 
+        x, final[0], y, final[1], z, final[2], mag, g_val);*/
+    
+    // The acceleration.direction value (one of six)
+    // Calculated with a convolution neural network because the teacher wanted us to include one
+    uint16_t direction = cnn_direction(x, y, z);
+    //printk("Returned from cnn calc: %d", direction);
+
+    // Assign all values
+    measurement->direction.x_deg = final[0];
+    measurement->direction.y_deg = final[1];
+    measurement->direction.z_deg = final[2];
+    measurement->direction.magnitude = g_val;
+    measurement->acceleration.direction = direction;    
+
+    return 0;
 }
 
 // Debug

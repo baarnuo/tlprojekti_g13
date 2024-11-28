@@ -13,7 +13,7 @@ if ($result->num_rows > 0) {
 	while ($row = $result->fetch_assoc()) {
 		$i = $i + 1;
 		echo "<br>";
-		echo $row["id_measurement"] . ";" . $row["timestamp"] . ";" . $row["x_val"] . ";" . $row["y_val"] . ";" . $row["z_val"] . ";" . $row["direction"] . ";" . $row["mac_address"];
+		echo $row["id_measurement"] . ";" . $row["timestamp"] . ";" . $row["x_val"] . ";" . $row["y_val"] . ";" . $row["z_val"] . ";" . $row["direction"] . ";" . $row["x_deg"] . ";" . $row["y_deg"] . ";" . $row["z_deg"] . ";" . $row["gravity"] . ";" . $row["mac_address"];
 	}
 } else {
 	echo "... No data found in database.";

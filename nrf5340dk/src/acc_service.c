@@ -14,7 +14,7 @@ static bool indicate_enabled;
 static struct bt_gatt_indicate_params indication_parameters;
 
 // Holds current reading data
-struct AccelerationData reading;
+struct AccelerometerMeasurement reading;
 
 // Declarations
 static int accelerometer_notification(void);
@@ -25,8 +25,8 @@ static void indication_callback(struct bt_conn *connection, struct bt_gatt_indic
 int read_and_notify(void) 
 {
     reading = read_data();
-    if (reading.direction == 0) {
-        //printk("read_and_notify(): error with getting a reading. No notification sent.\n");
+    if (reading.acceleration.direction == 0) {
+        printk("read_and_notify(): error with getting a reading. No notification sent.\n");
         return -1;
     }
 
@@ -44,8 +44,8 @@ int read_and_notify(void)
 int read_and_indicate(void) 
 {
     reading = read_data();
-    if (reading.direction == 0) {
-        //printk("read_and_indicate(): error with getting a reading. No indication sent.\n");
+    if (reading.acceleration.direction == 0) {
+        printk("read_and_indicate(): error with getting a reading. No indication sent.\n");
         return -1;
     }
 

@@ -25,7 +25,7 @@
 #define PRIORITY 7
 
 #define BLINK_INTERVAL 500
-#define MEASUREMENT_INTERVAL 5000
+#define MEASUREMENT_INTERVAL 10000
 
 // 
 static const struct bt_data advertisement_data[] = {
