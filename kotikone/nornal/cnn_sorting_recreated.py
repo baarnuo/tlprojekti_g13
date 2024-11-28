@@ -60,43 +60,37 @@ plt.show()
 
 def write_to_file(w, file, label1, label2):
 
-    string = "const double " + label1 + "[3][6] = {"
+    preamble = "#ifndef WEIGHTS_H_\n" + \
+              "#define WEIGHTS_H_\n\n"
+    postamble = "#endif"
+    
+    string = "#define " + label1 + " {"
 
     for i in range(len(w[0])):
         comma = "" if i == 0 else ", "
         string = string + comma + "{"
         st1 = ", ".join(str(num) for num in w[0][i])
         string = string + st1 + "}"
-    string = string + "};\n"
+    string = string + "}\n"
 
-    string = string +  "const double " + label2 + "[6] = {"
+    string = string +  "#define " + label2 + " {"
     st2 = ", ".join(str(num) for num in w[1])
-    string = string + st2 + "};\n\n"
+    string = string + st2 + "}\n\n"
 
     print(string)
 
+    file.write(preamble)
     file.write(string)
+    file.write(postamble)
     return
 
 def save_weights(w0):
-    file_h = open("acc_model_weights.h", "w+")
-    file_h.truncate(0)
-    h_text = "#ifndef WEIGHTS_H_\n" + \
-              "#define WEIGHTS_H_\n\n" + \
-              "const double weights[3][6];\n" + \
-              "const double biases[6];\n\n" + \
-              "#endif"
-    file_h.write(h_text)
-    file_h.close()
+    file = open("acc_model_weights.h", "w+")
+    file.truncate(0)
 
-    file_c = open("acc_model_weights.c", "w+")
-    file_c.truncate(0)
-    preamble = '#include "acc_model_weights.h"\n\n'
-    file_c.write(preamble)
+    write_to_file(w0, file, "WEIGHTS", "BIASES")
 
-    write_to_file(w0, file_c, "weights", "biases")
-
-    file_c.close()
+    file.close()
     return
 
 save_weights(w0)
