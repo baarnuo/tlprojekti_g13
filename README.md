@@ -21,7 +21,7 @@ Projekti suoritettiin OAMK:n tietotekniikan koulutusohjelman toisen vuosikurssin
 ![Anturi, nRF5340DK, Raspberry Pi ja tiedonsiirtoyhteys](readme_images/setup.jpg?raw=true)
 
 ### nRF 5340DK
-Luimme Nordicin kehitysalustalla kiihtyvyysanturilta ADC-kirjaston avulla suuntadataa, ja hyödynsimme alustan Bluetooth Low Energy -yhteyttä anturidatan eteenpäin lähetykseen. Loimme alustalle kiihtyvyysanturipalvelun, jota laite mainostaa ympäröiville BLE-laitteille. Palvelumme UUID:stä tunnistava ja siitä kiinnostunut laite voi muodostaa yhteyden ja tilata ilmoituksen, jonka alusta lähettää aina uuden mittauksen yhteydessä. 
+Luimme Nordicin kehitysalustalla kiihtyvyysanturilta ADC-kirjaston avulla suuntadataa, ja hyödynsimme alustan Bluetooth Low Energy -yhteyttä anturidatan eteenpäin lähetykseen. Loimme alustalle kiihtyvyysanturipalvelun, jota laite mainostaa ympäröiville BLE-laitteille. Ulkoinen laite voi muodostaa yhteyden alustaamme tunnistettuaan sen palvelun UUID-numeron perusteella ja tilata mittaustiedot. Aina mittauksen suoritettuaan alustamme lähettää mittaustulokset sisältävän ilmoituksen tilaajalle.
 
 Aloituspisteinä toimivat opettajan tarjoama adc-lukuohjelma ja Nordic Semiconductorin Bluetooth Low Energy Fundamentals -kurssin esimerkit.
 
