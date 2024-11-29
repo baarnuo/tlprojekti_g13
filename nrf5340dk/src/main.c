@@ -186,7 +186,7 @@ int main(void)
                 break;
             #ifdef ACC_CNN_CALC_H
             case NEURAL:
-                comp = 0x5555 >> (2 * (8 - true_direction));
+                comp = ~(0x5555 >> (2 * (8 - true_direction)));
                 break;
             #endif 
             #ifdef KMEANS_H
