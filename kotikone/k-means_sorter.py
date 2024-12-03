@@ -67,8 +67,27 @@ def calculate_k_means(points, centers):
         
         #print(old_centers)
         #print("uudet", new_centers)
-
+    create_and_ship_to_h(new_centers)
     return new_centers
+
+def create_and_ship_to_h(new_centers):
+    with open("centers.h", "w") as file:
+        rows = []
+        for center in new_centers:
+            row = "    {" + ", ".join(str(value) for value in center) + "}"
+            rows.append(row)
+        array = ",\n".join(rows)
+
+        opening_statement = "#ifndef CENTERS_H\n" + \
+                            "#define CENTERS_H\n\n"
+        content = "#define CENTERS {\n" + array + "\n};\n\n"
+        closing_statement = "#endif"
+
+        file.write(opening_statement)
+        file.write(content)
+        file.write(closing_statement)
+
+    return None
 
 def plot_results(points, centers):
     fig = plot.figure()
