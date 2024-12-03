@@ -158,15 +158,16 @@ static int calculate_direction(struct AccelerometerMeasurement *measurement, int
     // Calculating the acceleration.direction value (one of six)
     uint16_t direction;
     switch (algorithm) {
-        #ifdef  ACC_CNN_CALC_H
+        #ifdef  ACC_NN_CALC_H
         // Calculated with a convolution neural network because the teacher wanted us to include one
         case NEURAL:
-            direction = cnn_direction(x, y, z);
+            direction = nn_direction(x, y, z);
             break;
         #endif
         #ifdef  KMEANS_H
         case KMEANS:
             printk("K-means chosen\n");
+            direction = 0;
             break;
         #endif
         case NONE:
@@ -184,7 +185,7 @@ static int calculate_direction(struct AccelerometerMeasurement *measurement, int
             else if (135 < final[2]) {direction = 6;}
             break;
     }
-    //printk("Returned from cnn calc: %d", direction);
+    //printk("Returned from nn calc: %d", direction);
 
     // Assign all values
     measurement->direction.x_deg = final[0];

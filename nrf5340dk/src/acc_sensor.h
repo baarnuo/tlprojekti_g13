@@ -14,7 +14,7 @@
 #include <zephyr/drivers/adc.h>
 // For direction calculations
 #include <math.h>
-#include "acc_cnn_calc.h"
+#include "acc_nn_calc.h"
 
 struct AccelerationData {
     uint16_t x;
@@ -37,7 +37,7 @@ struct AccelerometerMeasurement {
 
 enum Algorithm {
     NONE,
-#ifdef  ACC_CNN_CALC_H
+#ifdef  ACC_NN_CALC_H
     NEURAL,
 #endif
 #ifdef  KMEANS_H

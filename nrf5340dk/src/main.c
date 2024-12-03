@@ -100,7 +100,7 @@ static void button_press(uint32_t state, uint32_t change)
     // Change the algorithm for the directional measurements
     if ((state & change) & ALGORITHM_BUTTON) {
         int maxNo = 0;
-        #ifdef ACC_CNN_CALC_H
+        #ifdef ACC_NN_CALC_H
         maxNo++;
         #endif
         #ifdef KMEANS_H
@@ -184,7 +184,7 @@ int main(void)
             case NONE:
                 comp = 0xFFFF;
                 break;
-            #ifdef ACC_CNN_CALC_H
+            #ifdef ACC_NN_CALC_H
             case NEURAL:
                 comp = ~(0x5555 >> (2 * (8 - true_direction)));
                 break;

@@ -1,6 +1,6 @@
-#include "acc_cnn_calc.h"
+#include "acc_nn_calc.h"
 
-int16_t cnn_direction(int16_t x, int16_t y, int16_t z)
+int16_t nn_direction(int16_t x, int16_t y, int16_t z)
 {
     double data[] = {(double)x, (double)y, (double)z};
     double outputs[] = {0, 0, 0, 0, 0, 0};
@@ -29,7 +29,7 @@ int16_t cnn_direction(int16_t x, int16_t y, int16_t z)
         }
     }
 
-    //printk("Returning from cnn calc: %d", res);
+    //printk("Returning from nn calc: %d", res);
 
     return res;
 }
