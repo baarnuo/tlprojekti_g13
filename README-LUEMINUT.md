@@ -1,6 +1,6 @@
 # Tietoliikenteen sovellusprojekti, syksy 2024: kiihtyvyysanturidataa käsittelevä järjestelmä
 
-Projektin tavoitteena oli tehdä nRF5340-kehitysalustalle ohjelma, joka ottaa dataa kiihtyvyysanturilta ja tekoälyn avulla päättelee siitä anturin asennon ja lähettää tämän langattomasti IoT-laitteelle, joka välittää tiedon eteenpäin tietokantaan. Tietokannasta tiedot pystyy lukemaan HTTP-rajapinnasta. (Kuva 1.)
+Projektin tavoitteena oli tehdä nRF5340-kehitysalustalle ohjelma, joka ottaa dataa kiihtyvyysanturilta, tekoälyn avulla päättelee siitä anturin asennon ja lähettää tämän langattomasti IoT-laitteelle, joka välittää tiedon eteenpäin tietokantaan. Tietokannasta tiedot pystyy lukemaan HTTP-rajapinnasta. (Kuva 1.)
 
 ![Arkkitehtuurikuva](readme_images/Arkkitehtuurikuva_2.png?raw=true)
 #### KUVA 1. Järjestelmän arkkitehtuuri
@@ -45,6 +45,7 @@ Etsimme [bleak](https://github.com/hbldh/bleak) -kirjastoon pohjautuvalla ohjelm
 Saimme koululta allokoidut henkilökohtaiset Linux-serverit, joita käytimme Linuxin opetteluun (ja sitä tukevien lisätehtävien tekoon). Loimme servereillemme myös omat MySQL-tietokannat datan säilytykseen sekä Apache-serveriin perustuvia HTTP-rajapintoja datan hakemiseen tietokannasta.
 
 ### Muut taidot
-Kurssilla seurattiin Scrum-metodologian oppeja; projekti jaettiin pieniin, viikottaisiin osioihin ja osioiden edistymistä seurattiin päivittäisillä ryhmäpalavereilla ja viikottaisilla useampien ryhmien kokouksilla. Tehtävien seuraamisessa apuna oli GitHubin projektiosion Kanban-taulu.
+Kurssilla seurattiin Scrum-metodologian oppeja; projekti jaettiin pieniin, viikottaisiin osioihin ja osioiden edistymistä seurattiin päivittäisillä ryhmäpalavereilla sekä viikottaisilla useampien ryhmien kokouksilla. Tehtävien seuraamisessa apuna oli GitHubin projektiosion Kanban-taulu.
 
 ## Yhteenveto
+Projekti sujui hyvin ja pysyimme projektin aikana aikataulussa. Saimme sekä projektin perusosion että lisätehtävät valmiiksi.
