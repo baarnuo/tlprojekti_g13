@@ -22,9 +22,9 @@ static int accelerometer_indication(void);
 static void indication_callback(struct bt_conn *connection, struct bt_gatt_indicate_params *parameters, uint8_t error);
 
 // Take accelerometer reading and send a notification
-int read_and_notify(void) 
+int read_and_notify(int algorithm) 
 {
-    reading = read_data();
+    reading = read_data(algorithm);
     if (reading.acceleration.direction == 0) {
         printk("read_and_notify(): error with getting a reading. No notification sent.\n");
         return -1;
@@ -41,9 +41,9 @@ int read_and_notify(void)
 }
 
 // Take accelerometer reading and send an indication
-int read_and_indicate(void) 
+int read_and_indicate(int algorithm) 
 {
-    reading = read_data();
+    reading = read_data(algorithm);
     if (reading.acceleration.direction == 0) {
         printk("read_and_indicate(): error with getting a reading. No indication sent.\n");
         return -1;

@@ -21,7 +21,7 @@ static const struct adc_dt_spec channels[] = {
 };
 
 // Declarations for debug/test functions
-static int calculate_direction(struct AccelerometerMeasurement *measurement);
+static int calculate_direction(struct AccelerometerMeasurement *measurement, int algorithm);
 static int channel_print(void);
 static int sequence_print(struct adc_sequence sequence);
 
@@ -53,7 +53,7 @@ int initialize_accelerometer(void)
 }
 
 // Read the accelerometer, return struct holding structs of readings and derived angles
-struct AccelerometerMeasurement read_data(void) 
+struct AccelerometerMeasurement read_data(int algorithm) 
 {
     struct AccelerometerMeasurement data = {
         .acceleration = {
@@ -118,7 +118,7 @@ struct AccelerometerMeasurement read_data(void)
     }
 
     // 
-    int res = calculate_direction(&data);
+    int res = calculate_direction(&data, algorithm);
     if (res < 0 || data.acceleration.direction == 0) {
         printk("Failed to calculate direction.\n");
     }
@@ -127,7 +127,7 @@ struct AccelerometerMeasurement read_data(void)
 }
 
 // Calculates the strength of gravity affecting the device and its direction
-static int calculate_direction(struct AccelerometerMeasurement *measurement)
+static int calculate_direction(struct AccelerometerMeasurement *measurement, int algorithm)
 {   
     // Base = voltage when an axis is at 0G, high = voltage when axis is at 1G, one_g = 1G
     // (these are just estimates, the exact value could be gotten through an average of results)
@@ -155,10 +155,36 @@ static int calculate_direction(struct AccelerometerMeasurement *measurement)
     /*printk("x: %dmV, %d°, y: %dmV, %d°, z: %dmV, %d°, magnitude: %d, acceleration (thousandths of 1G): %d.\n", 
         x, final[0], y, final[1], z, final[2], mag, g_val);*/
     
-    // The acceleration.direction value (one of six)
-    // Calculated with a convolution neural network because the teacher wanted us to include one
-    uint16_t direction = cnn_direction(x, y, z);
-    //printk("Returned from cnn calc: %d", direction);
+    // Calculating the acceleration.direction value (one of six)
+    uint16_t direction;
+    switch (algorithm) {
+        #ifdef  ACC_NN_CALC_H
+        // Calculated with a convolution neural network because the teacher wanted us to include one
+        case NEURAL:
+            direction = nn_direction(x, y, z);
+            break;
+        #endif
+        #ifdef  KMEANS_H
+        case KMEANS:
+            direction = kmeans_direction(x, y, z);
+            break;
+        #endif
+        case NONE:
+        default:
+            if (final[0] < 45) {direction = 1;}
+            // X points down
+            else if (135 < final[0]) {direction = 2;}
+            // Y points up
+            else if (final[1] < 45) {direction = 3;}
+            // Y points down
+            else if (135 < final[1]) {direction = 4;}
+            // Z points up
+            else if (final[2] < 45) {direction = 5;}
+            // Z points down
+            else if (135 < final[2]) {direction = 6;}
+            break;
+    }
+    //printk("Returned from nn calc: %d", direction);
 
     // Assign all values
     measurement->direction.x_deg = final[0];

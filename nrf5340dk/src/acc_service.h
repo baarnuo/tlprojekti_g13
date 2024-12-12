@@ -24,7 +24,7 @@
 
 
 // The two functions you can use to collect and send data
-int read_and_notify(void);
-int read_and_indicate(void);
+int read_and_notify(int algorithm);
+int read_and_indicate(int algorithm);
 
 #endif
