@@ -74,13 +74,13 @@ def create_and_ship_to_h(new_centers):
     with open("centers.h", "w") as file:
         rows = []
         for center in new_centers:
-            row = "    {" + ", ".join(str(value) for value in center) + "}"
+            row = " {" + ", ".join(str(value) for value in center) + "}"
             rows.append(row)
-        array = ",\n".join(rows)
+        array = ", ".join(rows)
 
         opening_statement = "#ifndef CENTERS_H\n" + \
                             "#define CENTERS_H\n\n"
-        content = "#define CENTERS {\n" + array + "\n};\n\n"
+        content = "#define CENTERS {" + array + "}\n\n"
         closing_statement = "#endif"
 
         file.write(opening_statement)
