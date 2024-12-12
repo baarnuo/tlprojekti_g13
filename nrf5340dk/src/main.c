@@ -191,7 +191,7 @@ int main(void)
             #endif 
             #ifdef KMEANS_H
             case KMEANS:
-                comp = 0x5555 << (2 * true_direction);
+                comp = 0x5555 >> (2 * (8 - true_direction));
                 break;
             #endif
         } 
@@ -202,7 +202,7 @@ int main(void)
     }
 }
 
-// A separate thread to take measurements independetly of the main loop
+// A separate thread to take measurements independently of the main loop
 void measurement_thread(void)
 {
     int error = initialize_accelerometer();

@@ -15,6 +15,7 @@
 // For direction calculations
 #include <math.h>
 #include "acc_nn_calc.h"
+#include "kmeans.h"
 
 struct AccelerationData {
     uint16_t x;

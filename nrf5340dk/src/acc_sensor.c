@@ -166,8 +166,7 @@ static int calculate_direction(struct AccelerometerMeasurement *measurement, int
         #endif
         #ifdef  KMEANS_H
         case KMEANS:
-            printk("K-means chosen\n");
-            direction = 0;
+            direction = kmeans_direction(x, y, z);
             break;
         #endif
         case NONE:
